@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CodePulse.Data;
 using CodePulse.Models.Domain;
 using CodePulse.Models.DTO;
+using CodePulse.Repositories.Implementation;
+using CodePulse.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,11 +16,11 @@ namespace CodePulse.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly ICategoryRepository categoryRepository;
 
-        public CategoriesController(ApplicationDbContext dbContext)
+        public CategoriesController(ICategoryRepository categoryRepository)
         {
-            this.dbContext = dbContext;
+            this.categoryRepository = categoryRepository;
         }
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CreateCategoryRequestDTO request)
@@ -29,10 +31,9 @@ namespace CodePulse.Controllers
                 Name = request.Name,
                 UrlHandle = request.UrlHandle
             };
-            await dbContext.Categories.AddAsync(category);
-            await dbContext.SaveChangesAsync();
-            // map from domain model to dto
-            var response = new CategoryDto() {
+          await  categoryRepository.CreateAsync(category);
+                 // map from domain model to dto
+                 var response = new CategoryDto() {
                 Id = category.Id,
                 Name = category.Name,
                 UrlHandle = category.UrlHandle
