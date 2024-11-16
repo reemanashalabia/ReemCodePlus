@@ -59,6 +59,71 @@ namespace CodePulse.Controllers
             }
             return Ok(response);
         }
+        // Get: /api/categoroies/{id}
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
+        {
+            var exisetingCategory = await categoryRepository.GetById(id);
+            if (exisetingCategory is null)
+            {
+                return NotFound();
+            }
+            var response = new CategoryDto()
+            {
+                Id = exisetingCategory.Id,
+                Name = exisetingCategory.Name,
+                UrlHandle = exisetingCategory.UrlHandle
+            };
+            return Ok(response);
+        }
+        //PUT : /api/categories/{id}
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> EditCategory([FromRoute] Guid id, [FromBody] UpdateCategoryRequestDTO request)
+        {
+            // convert from dyo to domain model
+
+            var category = new Category()
+            {
+                Id = id,
+                Name = request.Name,
+                UrlHandle = request.UrlHandle
+            };
+            category = await categoryRepository.UpdateAsync(category);
+            if (category is null)
+            {
+                return NotFound();
+            }
+            // map domain model to dto 
+            var response = new CategoryDto()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                UrlHandle = category.UrlHandle
+            };
+            return Ok(response);
+
+        }
+        // Delete : /api/categories/{id}
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
+        {
+            var category = await categoryRepository.DeleteAsync(id);
+            if (category is null)
+            {
+                return NotFound();
+            }
+            // map domain model to dto 
+            var response = new CategoryDto()
+            {
+                Id = category.Id,
+                Name = category.Name,
+                UrlHandle = category.UrlHandle
+            };
+            return Ok(response);
+        }
 
 
     }
