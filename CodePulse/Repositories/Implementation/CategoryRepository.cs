@@ -2,15 +2,16 @@
 using CodePulse.Data;
 using CodePulse.Models.Domain;
 using CodePulse.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodePulse.Repositories.Implementation
 {
-	public class CategoryRepository : ICategoryRepository
-	{
+    public class CategoryRepository : ICategoryRepository
+    {
         private readonly ApplicationDbContext dbContext;
 
         public CategoryRepository(ApplicationDbContext dbContext)
-		{
+        {
             this.dbContext = dbContext;
         }
 
@@ -19,6 +20,11 @@ namespace CodePulse.Repositories.Implementation
             await dbContext.Categories.AddAsync(category);
             await dbContext.SaveChangesAsync();
             return category;
+        }
+
+        public async Task<IEnumerable<Category>> GetAllAsync()
+        {
+            return await dbContext.Categories.ToListAsync();
         }
     }
 }
