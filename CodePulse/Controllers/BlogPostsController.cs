@@ -17,10 +17,13 @@ namespace CodePulse.Controllers
     public class BlogPostsController : Controller
     {
         private readonly IBlogPostRepository blogPostRepository;
+        private readonly ICategoryRepository categoryRepository;
 
-        public BlogPostsController(IBlogPostRepository blogPostRepository)
+        public BlogPostsController(IBlogPostRepository blogPostRepository, ICategoryRepository categoryRepository)
         {
             this.blogPostRepository = blogPostRepository;
+            this.categoryRepository = categoryRepository;
+
         }
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CreateBlogPostDto request)
@@ -37,9 +40,18 @@ namespace CodePulse.Controllers
                 Title = request.Title,
                 ShortDescription = request.ShortDescription,
                 UrlHandle = request.UrlHandle,
+                Categories = new List<Category>()
 
 
             };
+            foreach (var categoryGuid in request.Categories)
+            {
+                var exisetingCategory = await categoryRepository.GetById(categoryGuid);
+                if (exisetingCategory is not null)
+                {
+                    blogpost.Categories.Add(exisetingCategory);
+                }
+            }
             var blogPost = await blogPostRepository.CreateAsync(blogpost);
             // map from domain model to dto
             var response = new BlogPostDto()
@@ -53,7 +65,13 @@ namespace CodePulse.Controllers
                 Title = blogPost.Title,
                 ShortDescription = blogPost.ShortDescription,
                 UrlHandle = blogPost.UrlHandle,
-                Id = blogPost.Id
+                Id = blogPost.Id,
+                Categories = blogPost.Categories.Select(x => new CategoryDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
             };
             return Ok(response);
         }
@@ -63,10 +81,10 @@ namespace CodePulse.Controllers
         {
             var blogposts = await blogPostRepository.GetAllAsync();
             // map domain model to dto
-            var response = new List<BlogPost>();
+            var response = new List<BlogPostDto>();
             foreach (var blogPost in blogposts)
             {
-                response.Add(new BlogPost()
+                response.Add(new BlogPostDto()
                 {
                     Author = blogPost.Author,
                     Content = blogPost.Content,
@@ -77,7 +95,14 @@ namespace CodePulse.Controllers
                     Title = blogPost.Title,
                     ShortDescription = blogPost.ShortDescription,
                     UrlHandle = blogPost.UrlHandle,
-                    Id = blogPost.Id
+                    Id = blogPost.Id,
+                    Categories = blogPost.Categories.Select(x => new CategoryDto()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        UrlHandle = x.UrlHandle
+                    }).ToList()
+
                 });
             }
             return Ok(response);
