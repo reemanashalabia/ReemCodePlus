@@ -79,6 +79,7 @@ namespace CodePulse.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllBlogPosts()
         {
+
             var blogposts = await blogPostRepository.GetAllAsync();
             // map domain model to dto
             var response = new List<BlogPostDto>();
@@ -107,52 +108,96 @@ namespace CodePulse.Controllers
             }
             return Ok(response);
         }
-        // // Get: /api/categoroies/{id}
-        // [HttpGet]
-        // [Route("{id:Guid}")]
-        // public async Task<IActionResult> GetCategoryById([FromRoute] Guid id)
-        // {
-        //     var exisetingCategory = await categoryRepository.GetById(id);
-        //     if (exisetingCategory is null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     var response = new CategoryDto()
-        //     {
-        //         Id = exisetingCategory.Id,
-        //         Name = exisetingCategory.Name,
-        //         UrlHandle = exisetingCategory.UrlHandle
-        //     };
-        //     return Ok(response);
-        // }
-        // //PUT : /api/categories/{id}
-        // [HttpPut]
-        // [Route("{id:Guid}")]
-        // public async Task<IActionResult> EditCategory([FromRoute] Guid id, [FromBody] UpdateCategoryRequestDTO request)
-        // {
-        //     // convert from dyo to domain model
+        // Get: /api/blogposts/{id}
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetBlogPostById([FromRoute] Guid id)
+        {
+            // get blog post frpm repo
+            var exisetingBlogPost = await blogPostRepository.GetById(id);
+            if (exisetingBlogPost is null)
+            {
+                return NotFound();
+            }
+            var response = new BlogPostDto()
+            {
+                Author = exisetingBlogPost.Author,
+                Content = exisetingBlogPost.Content,
+                FeaturedImageUrl = exisetingBlogPost.FeaturedImageUrl,
+                IsVisible = exisetingBlogPost.IsVisible,
 
-        //     var category = new Category()
-        //     {
-        //         Id = id,
-        //         Name = request.Name,
-        //         UrlHandle = request.UrlHandle
-        //     };
-        //     category = await categoryRepository.UpdateAsync(category);
-        //     if (category is null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     // map domain model to dto 
-        //     var response = new CategoryDto()
-        //     {
-        //         Id = category.Id,
-        //         Name = category.Name,
-        //         UrlHandle = category.UrlHandle
-        //     };
-        //     return Ok(response);
+                PublishedDate = exisetingBlogPost.PublishedDate,
+                Title = exisetingBlogPost.Title,
+                ShortDescription = exisetingBlogPost.ShortDescription,
+                UrlHandle = exisetingBlogPost.UrlHandle,
+                Id = exisetingBlogPost.Id,
+                Categories = exisetingBlogPost.Categories.Select(x => new CategoryDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+            return Ok(response);
+        }
+        //PUT : /api/blogposts/{id}
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> EditBlogPost([FromRoute] Guid id, [FromBody] UpdateBlogPostRequestDto request)
+        {
+            // convert from dyo to domain model
 
-        // }
+            var blogPost = new BlogPost()
+            {
+                Id = id,
+                Author = request.Author,
+                Content = request.Content,
+                FeaturedImageUrl = request.FeaturedImageUrl,
+                IsVisible = request.IsVisible,
+
+                PublishedDate = request.PublishedDate,
+                Title = request.Title,
+                ShortDescription = request.ShortDescription,
+                UrlHandle = request.UrlHandle,
+                Categories = new List<Category>(),
+
+            };
+            foreach (var categoryGuid in request.Categories)
+            {
+                var exisetingCategory = await categoryRepository.GetById(categoryGuid);
+                if (exisetingCategory is not null)
+                {
+                    blogPost.Categories.Add(exisetingCategory);
+                }
+            }
+            var updatedblogPost = await blogPostRepository.UpdateAsync(blogPost);
+            if (updatedblogPost is null)
+            {
+                return NotFound();
+            }
+            // map domain model to dto 
+            var response = new BlogPostDto()
+            {
+                Author = updatedblogPost.Author,
+                Content = updatedblogPost.Content,
+                FeaturedImageUrl = updatedblogPost.FeaturedImageUrl,
+                IsVisible = updatedblogPost.IsVisible,
+
+                PublishedDate = updatedblogPost.PublishedDate,
+                Title = updatedblogPost.Title,
+                ShortDescription = updatedblogPost.ShortDescription,
+                UrlHandle = updatedblogPost.UrlHandle,
+                Id = updatedblogPost.Id,
+                Categories = updatedblogPost.Categories.Select(x => new CategoryDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+            return Ok(response);
+
+        }
         // // Delete : /api/categories/{id}
         // [HttpDelete]
         // [Route("{id:Guid}")]

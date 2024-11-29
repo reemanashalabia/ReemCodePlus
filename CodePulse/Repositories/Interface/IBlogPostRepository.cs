@@ -10,7 +10,7 @@ namespace CodePulse.Repositories.Interface
         // return BlogPost or null
         Task<BlogPost?> GetById(Guid Id);
 
-        Task<BlogPost?> UpdateAsync(BlogPost category);
+        Task<BlogPost?> UpdateAsync(BlogPost blogPost);
         Task<BlogPost?> DeleteAsync(Guid Id);
     }
 }
