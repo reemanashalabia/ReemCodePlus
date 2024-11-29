@@ -198,25 +198,33 @@ namespace CodePulse.Controllers
             return Ok(response);
 
         }
-        // // Delete : /api/categories/{id}
-        // [HttpDelete]
-        // [Route("{id:Guid}")]
-        // public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
-        // {
-        //     var category = await categoryRepository.DeleteAsync(id);
-        //     if (category is null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     // map domain model to dto 
-        //     var response = new CategoryDto()
-        //     {
-        //         Id = category.Id,
-        //         Name = category.Name,
-        //         UrlHandle = category.UrlHandle
-        //     };
-        //     return Ok(response);
-        // }
+        // Delete : /api/blogposts/{id}
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
+        {
+            var blogPost = await blogPostRepository.DeleteAsync(id);
+            if (blogPost is null)
+            {
+                return NotFound();
+            }
+            // map domain model to dto 
+            var response = new BlogPostDto()
+            {
+                Author = blogPost.Author,
+                Content = blogPost.Content,
+                FeaturedImageUrl = blogPost.FeaturedImageUrl,
+                IsVisible = blogPost.IsVisible,
+
+                PublishedDate = blogPost.PublishedDate,
+                Title = blogPost.Title,
+                ShortDescription = blogPost.ShortDescription,
+                UrlHandle = blogPost.UrlHandle,
+                Id = blogPost.Id,
+
+            };
+            return Ok(response);
+        }
 
 
     }

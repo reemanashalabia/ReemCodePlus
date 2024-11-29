@@ -17,6 +17,9 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
   routeSubscription! : Subscription;
   model? : BlogPost ;
   blogPostServiceSubscription! : Subscription;
+  blogPostServiceDeleteSubscription! : Subscription;
+  blogPostServiceGetSubscription! : Subscription;
+
   categories$? :Observable<Category[]> ;
   selectedCategories? :string[];
 
@@ -29,6 +32,9 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
   }
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();  
+    this.blogPostServiceGetSubscription?.unsubscribe();  
+    this.blogPostServiceDeleteSubscription?.unsubscribe();  
+
     this.blogPostServiceSubscription.unsubscribe();}
   ngOnInit(): void {
     this.routeSubscription =this.route.paramMap.subscribe({
@@ -37,7 +43,7 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
       // Get Blog Post From APi
       if(this.id)
         {
-        this.blogPostServiceSubscription =  this.blogPostService.getBlogPostById(this.id).subscribe({
+        this.blogPostServiceGetSubscription =  this.blogPostService.getBlogPostById(this.id).subscribe({
             next:(response)=>{
               this.model = response;
               this.selectedCategories = response.categories.map(x=>x.id);
@@ -50,28 +56,39 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
     this.categories$ = this.categoryService.GetAllCategories();
   }
   onSubmitForm(){
-if(this.model && this.id)
-  {
-    var updatedBlogPost : EditBlogPost ={
-      title : this.model?.title,
-      author : this.model?.author,
-      content : this.model?.content,
-      categories :this.selectedCategories ?? [],
-      featuredImageUrl : this.model?.featuredImageUrl,
-      isVisible : this.model?.isVisible,
-      publishedDate : this.model?.publishedDate,
-      shortDescription : this.model?.shortDescription,
+    if(this.model && this.id)
+      {
+        var updatedBlogPost : EditBlogPost ={
+          title : this.model?.title,
+          author : this.model?.author,
+          content : this.model?.content,
+          categories :this.selectedCategories ?? [],
+          featuredImageUrl : this.model?.featuredImageUrl,
+          isVisible : this.model?.isVisible,
+          publishedDate : this.model?.publishedDate,
+          shortDescription : this.model?.shortDescription,
 
-      urlHandle : this.model?.urlHandle,
+          urlHandle : this.model?.urlHandle,
 
 
 
-    }
-    this.blogPostServiceSubscription = this.blogPostService.updateBlogPost(this.id , updatedBlogPost).subscribe({
-      next:(response) =>{
-         this.router.navigateByUrl('/admin/blogposts')
+        }
+        this.blogPostServiceSubscription = this.blogPostService.updateBlogPost(this.id , updatedBlogPost).subscribe({
+          next:(response) =>{
+            this.router.navigateByUrl('/admin/blogposts')
+          }
+        });
       }
-    });
   }
+  OnDelete():void{
+    if(this.id)
+      {
+        this.blogPostServiceDeleteSubscription = this.blogPostService.deleteBlogPost(this.id).subscribe({
+          next:()=>{
+            this.router.navigateByUrl("/admin/blogposts")
+          }
+        })
+      }
+
   }
 }

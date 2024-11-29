@@ -21,9 +21,16 @@ namespace CodePulse.Repositories.Implementation
             return blogPost;
         }
 
-        public Task<BlogPost?> DeleteAsync(Guid Id)
+        public async Task<BlogPost?> DeleteAsync(Guid Id)
         {
-            throw new NotImplementedException();
+            var exisetingBlogPost = await dbContext.BlogPosts.FirstOrDefaultAsync(x => x.Id == Id);
+            if (exisetingBlogPost is null)
+            {
+                return null;
+            }
+            dbContext.BlogPosts.Remove(exisetingBlogPost);
+            await dbContext.SaveChangesAsync();
+            return exisetingBlogPost;
         }
 
         public async Task<IEnumerable<BlogPost>> GetAllAsync()
