@@ -6,6 +6,7 @@ import { BlogPost } from '../models/blog-post.model';
 import { CategoryService } from '../../category/services/category.service';
 import { Category } from '../../category/models/category.model';
 import { EditBlogPost } from '../models/edit-blog-post.model';
+import { ImageService } from 'src/app/shared/components/image-selector/image.service';
 
 @Component({
   selector: 'app-edit-blogpost',
@@ -19,14 +20,16 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
   blogPostServiceSubscription! : Subscription;
   blogPostServiceDeleteSubscription! : Subscription;
   blogPostServiceGetSubscription! : Subscription;
+  imageSelectSubscription! : Subscription;
 
   categories$? :Observable<Category[]> ;
   selectedCategories? :string[];
-
+isImageSelectorVisible:boolean = false;
   /**
    *inject Activated Route to get Id from route and service to get data
    */
-  constructor(private route:ActivatedRoute ,private blogPostService : BlogPostService , private categoryService : CategoryService, private router : Router ) {
+  constructor(private route:ActivatedRoute ,private blogPostService : BlogPostService
+     , private categoryService : CategoryService, private router : Router,private imageService:ImageService ) {
    
 
   }
@@ -34,6 +37,7 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
     this.routeSubscription?.unsubscribe();  
     this.blogPostServiceGetSubscription?.unsubscribe();  
     this.blogPostServiceDeleteSubscription?.unsubscribe();  
+    this.imageSelectSubscription?.unsubscribe();
 
     this.blogPostServiceSubscription.unsubscribe();}
   ngOnInit(): void {
@@ -51,6 +55,17 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
           });
 
         }
+       this.imageSelectSubscription= this.imageService.onSelectImage().subscribe({
+          next:(response)=>{
+            if(this.model )
+              {
+                this.model.featuredImageUrl = response.url;
+                this.isImageSelectorVisible = false;
+
+              }
+
+          }
+        })
       },
     });
     this.categories$ = this.categoryService.GetAllCategories();
@@ -89,6 +104,13 @@ export class EditBlogpostComponent implements OnInit , OnDestroy {
           }
         })
       }
+
+  }
+  openImageSelector():void{
+this.isImageSelectorVisible = true;
+  }
+  closeImageSelector():void{
+    this.isImageSelectorVisible = false;
 
   }
 }
