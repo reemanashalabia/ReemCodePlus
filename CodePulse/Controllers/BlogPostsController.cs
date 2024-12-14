@@ -226,6 +226,39 @@ namespace CodePulse.Controllers
             return Ok(response);
         }
 
+        // Get: /api/blogposts/{url}
+        [HttpGet]
+        [Route("{urlHandle}")]
+        public async Task<IActionResult> GetBlogPostByUrlHandle([FromRoute] string urlHandle)
+        {
+            // get blog post frpm repo
+            var exisetingBlogPost = await blogPostRepository.GetByurlHandle(urlHandle);
+            if (exisetingBlogPost is null)
+            {
+                return NotFound();
+            }
+            var response = new BlogPostDto()
+            {
+                Author = exisetingBlogPost.Author,
+                Content = exisetingBlogPost.Content,
+                FeaturedImageUrl = exisetingBlogPost.FeaturedImageUrl,
+                IsVisible = exisetingBlogPost.IsVisible,
+
+                PublishedDate = exisetingBlogPost.PublishedDate,
+                Title = exisetingBlogPost.Title,
+                ShortDescription = exisetingBlogPost.ShortDescription,
+                UrlHandle = exisetingBlogPost.UrlHandle,
+                Id = exisetingBlogPost.Id,
+                Categories = exisetingBlogPost.Categories.Select(x => new CategoryDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+            return Ok(response);
+        }
+
 
     }
 }
