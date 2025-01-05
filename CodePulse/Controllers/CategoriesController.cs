@@ -7,6 +7,7 @@ using CodePulse.Models.Domain;
 using CodePulse.Models.DTO;
 using CodePulse.Repositories.Implementation;
 using CodePulse.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CodePulse.Controllers
 {
     [Route("api/[controller]")]
-    public class CategoriesController : Controller
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository categoryRepository;
 
@@ -23,6 +24,8 @@ namespace CodePulse.Controllers
             this.categoryRepository = categoryRepository;
         }
         [HttpPost]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequestDTO request)
         {
             //Map Dto to domain model
@@ -80,6 +83,8 @@ namespace CodePulse.Controllers
         //PUT : /api/categories/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> EditCategory([FromRoute] Guid id, [FromBody] UpdateCategoryRequestDTO request)
         {
             // convert from dyo to domain model
@@ -108,6 +113,8 @@ namespace CodePulse.Controllers
         // Delete : /api/categories/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
             var category = await categoryRepository.DeleteAsync(id);

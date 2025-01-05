@@ -7,6 +7,7 @@ using CodePulse.Models.Domain;
 using CodePulse.Models.DTO;
 using CodePulse.Repositories.Implementation;
 using CodePulse.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,6 +27,8 @@ namespace CodePulse.Controllers
 
         }
         [HttpPost]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> CreateCategory([FromBody] CreateBlogPostDto request)
         {
             //Map Dto to domain model
@@ -143,6 +146,8 @@ namespace CodePulse.Controllers
         //PUT : /api/blogposts/{id}
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> EditBlogPost([FromRoute] Guid id, [FromBody] UpdateBlogPostRequestDto request)
         {
             // convert from dyo to domain model
@@ -201,6 +206,8 @@ namespace CodePulse.Controllers
         // Delete : /api/blogposts/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
+
         public async Task<IActionResult> DeleteBlogPost([FromRoute] Guid id)
         {
             var blogPost = await blogPostRepository.DeleteAsync(id);

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CodePulse.Controllers
 {
     [Route("api/[controller]")]
-    public class ImagesController : Controller
+    public class ImagesController : ControllerBase
     {
         private readonly IImageRepository imageRepository;
 
