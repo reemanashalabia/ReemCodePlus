@@ -15,11 +15,19 @@ export class CategoryService {
   addCategory(model:AddCategoryRequest):Observable<void>{
     return this.http.post<void>(`${environment.apiBaseUrl}api/Categories?auth=true`,model);
   }
-  GetAllCategories(query?:string):Observable<Category[]>{
+  GetAllCategories(query?:string,sortBy?:string, sortDirection?:string):Observable<Category[]>{
     let params = new HttpParams();
     if(query)
       {
         params = params.set('query',query)
+      }
+      if(sortBy)
+        {
+          params = params.set('sortBy',sortBy)
+        }
+    if(sortDirection)
+      {
+        params = params.set('sortDirection',sortDirection)
       }
     return this.http.get<Category[]>(`${environment.apiBaseUrl}api/Categories`,{
       params:params

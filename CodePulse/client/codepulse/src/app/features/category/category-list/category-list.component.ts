@@ -25,4 +25,8 @@ categories$ ?:Observable<Category[]>;
   {
     this.categories$ = this.categoryService.GetAllCategories(query);
   }
+  sort(sortBy:string, sortDirection:string){
+    this.categories$ = this.categoryService.GetAllCategories(undefined,sortBy,sortDirection);
+
+  }
 }

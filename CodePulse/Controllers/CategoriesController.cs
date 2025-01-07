@@ -46,9 +46,9 @@ namespace CodePulse.Controllers
         }
         // Get : /api/categories?query=html
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories([FromQuery] string? query)
+        public async Task<IActionResult> GetAllCategories([FromQuery] string? query, [FromQuery] string? sortBy, [FromQuery] string? sortDirection)
         {
-            var categories = await categoryRepository.GetAllAsync(query);
+            var categories = await categoryRepository.GetAllAsync(query, sortBy, sortDirection);
             // map domain model to dto
             var response = new List<CategoryDto>();
             foreach (var category in categories)
