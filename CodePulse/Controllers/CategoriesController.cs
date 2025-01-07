@@ -44,11 +44,11 @@ namespace CodePulse.Controllers
             };
             return Ok(response);
         }
-        // Get : /api/categories
+        // Get : /api/categories?query=html
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] string? query)
         {
-            var categories = await categoryRepository.GetAllAsync();
+            var categories = await categoryRepository.GetAllAsync(query);
             // map domain model to dto
             var response = new List<CategoryDto>();
             foreach (var category in categories)

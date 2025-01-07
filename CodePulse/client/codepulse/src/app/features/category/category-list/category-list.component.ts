@@ -21,5 +21,8 @@ categories$ ?:Observable<Category[]>;
    
  
   }
-
+  onSearch(query:string)
+  {
+    this.categories$ = this.categoryService.GetAllCategories(query);
+  }
 }
